@@ -40,15 +40,16 @@ class SystemFiles
 		}
 		void OpenFile(string name)
 		{
+			int numberSector =-1;
 			for (list<File*>::iterator i = files.begin(); i != files.end(); i++)
 			{
 				if ((*i)->GetName() == name)
 				{
-					int numberSector = (*i)->GetNumberSector();
+					numberSector = (*i)->GetNumberSector();
 					break;
 				}
 			}
-			//disc->TryOpenFile(numberSector);
+			disc->TryOpenFile(numberSector);
 		}
 
 };

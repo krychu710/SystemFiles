@@ -36,6 +36,15 @@ int main()
 				systemFiles->ShowSectors();
 				break;
 			}
+			case '3':
+			{
+				string name;
+				cout << "Podaj nazwe pliku: ";
+				cin.ignore();
+				getline(cin, name);
+				systemFiles->OpenFile(name);
+				break;
+			}
 
 		}
 

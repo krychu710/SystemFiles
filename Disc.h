@@ -71,8 +71,11 @@ class Disc
 			}
 			return numberIndexBlock;
 		}
-		string TryOpenFile(int numberSector)
+		char* TryOpenFile(int numberSector)
 		{
+			
+			int* indexes = getIndexesOfBlock(numberSector);
+
 
 			return "";
 		}
@@ -106,10 +109,37 @@ class Disc
 			}
 			return freeSectors;
 		}
-		char* getSector(int numberSector)
+		char* getBlock(int numberSector)
 		{
 			int startIndex = numberSector * amoutSectors;
-
+			char* block = new char[amoutSectors];
+			memcpy(block, &memory[startIndex], amoutSectors);
+			return block;
+		}
+		int* getIndexesOfBlock(int numberSector)
+		{
+			char* indexBlock = getBlock(numberSector);
+			int i = 0;
+			int* indexes;
+			if (indexBlock[i] == '0')
+			{
+				int j = 0;
+				i = 1;
+				while (indexBlock[i] != '#')
+				{
+					j++;
+					i++;
+				}
+				indexes = new int[j];
+				i = 1;
+				while (indexBlock[i] != '#' && i <= j)
+				{
+					indexes[i-1] = indexBlock[i]-'0';
+					i++;
+				}
+			}
+			
+			return indexes;
 		}
 };
 
