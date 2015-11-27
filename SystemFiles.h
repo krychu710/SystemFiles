@@ -33,6 +33,14 @@ class SystemFiles
 				cout << "[" << i << "]" << " - " << sectors[i] << endl;
 			}
 		}
+		void ShowMemory()
+		{
+			char* memory = disc->getMemory();
+			for (int i = 0; i < sizeMemory; i++)
+			{
+				cout << "[" << i << "]" << " - " << memory[i] << endl;
+			}
+		}
 		void GetNamesFiles()
 		{
 			for (list<File*>::iterator i = files.begin(); i != files.end(); i++)

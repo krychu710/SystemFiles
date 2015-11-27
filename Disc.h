@@ -24,7 +24,7 @@ class Disc
 			}
 			for (int i = 0; i < discSize; i++)
 			{
-				memory[i] = '#';
+				memory[i] = '\0';
 			}
 		}
 		int* getSectors()
@@ -73,11 +73,17 @@ class Disc
 		}
 		char* TryOpenFile(int numberSector)
 		{
-			
-			int* indexes = getIndexesOfBlock(numberSector);
-
-
-			return "";
+			int amoutIndexesOfBlock = 0;
+			int* indexes = getIndexesOfBlock(numberSector, amoutIndexesOfBlock);
+			char* content = new char[amoutIndexesOfBlock*amoutSectors];
+			int x = 0;
+			for (int i = 0; i < amoutIndexesOfBlock; i++)
+			{
+				char* block = getBlock(indexes[i]);
+				for (int j = 1; j < amoutSectors && block[i]!='\0'; j++)
+					content[x++] = block[j];	
+			}
+			return content;
 		}
 	private:
 		int findFirstFreeSectorOrDefault()
@@ -113,10 +119,14 @@ class Disc
 		{
 			int startIndex = numberSector * amoutSectors;
 			char* block = new char[amoutSectors];
+			for (int i = 0; i < amoutSectors; i++)
+			{
+				block[i] = '\0';
+			}
 			memcpy(block, &memory[startIndex], amoutSectors);
 			return block;
 		}
-		int* getIndexesOfBlock(int numberSector)
+		int* getIndexesOfBlock(int numberSector, int& amountIndexesOfBlock)
 		{
 			char* indexBlock = getBlock(numberSector);
 			int i = 0;
@@ -125,14 +135,15 @@ class Disc
 			{
 				int j = 0;
 				i = 1;
-				while (indexBlock[i] != '#')
+				while (indexBlock[i] != '\0')
 				{
 					j++;
 					i++;
 				}
-				indexes = new int[j];
+				amountIndexesOfBlock = j;
+				indexes = new int[amountIndexesOfBlock];
 				i = 1;
-				while (indexBlock[i] != '#' && i <= j)
+				while (indexBlock[i] != '\0' && i <= j)
 				{
 					indexes[i-1] = indexBlock[i]-'0';
 					i++;

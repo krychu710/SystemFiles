@@ -7,7 +7,6 @@
 int main()
 {
 	SystemFiles* systemFiles = new SystemFiles();
-
 	while (1)
 	{
 		char item = '0';
@@ -34,6 +33,7 @@ int main()
 			case '2':
 			{
 				systemFiles->ShowSectors();
+				systemFiles->ShowMemory();
 				break;
 			}
 			case '3':
