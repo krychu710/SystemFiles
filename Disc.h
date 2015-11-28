@@ -10,22 +10,23 @@ class Disc
 	private:
 		char* memory;
 		int* sectors;
-		int amoutSectors;
+		int sectorAmout;
+		int sectorSize;
+		int discSize;
 	public:
 		Disc(int discSize, int sectorSize)
 		{
-			amoutSectors = discSize / sectorSize; 
-			memory = new char[discSize];
+			this->discSize = discSize;
+			this->sectorSize = sectorSize;
+			sectorAmout = discSize / sectorSize; 
 			sectors = new int[sectorSize];
+			memory = getEmptyArray(discSize);
 
 			for (int i = 0; i < sectorSize; i++)
 			{
 				sectors[i] = 0;
 			}
-			for (int i = 0; i < discSize; i++)
-			{
-				memory[i] = '\0';
-			}
+			
 		}
 		int* getSectors()
 		{
@@ -35,17 +36,19 @@ class Disc
 		{
 			return memory;
 		}
+		//zapis do pliku na dysku 
 		int TrySaveFile(string text)
 		{
 			double amoutReserveSectors = text.length();
-			amoutReserveSectors /= amoutSectors;
+			amoutReserveSectors /= sectorAmout;
 			amoutReserveSectors = ceil(amoutReserveSectors);
 
 			int numberIndexBlock = findFirstFreeSectorOrDefault();
 			sectors[numberIndexBlock] = 1;
 			int* numbersIndexMemory = findFewFreeSectorOrDefault(amoutReserveSectors);
 
-			int beginIndex = numberIndexBlock * amoutSectors;
+			//zapis bloku indeksowego
+			int beginIndex = numberIndexBlock * sectorAmout;
 			memory[beginIndex] = '0';
 			int i, j;
 			
@@ -54,18 +57,27 @@ class Disc
 				memory[i] = numbersIndexMemory[j] + '0';
 			}
 
+			//zapis bloku z danymi
 			int indexText = 0;
 			for (i = 0; i < amoutReserveSectors; i++)
 			{
-				int indexMemory = numbersIndexMemory[i] * amoutSectors;
+				int indexMemory = numbersIndexMemory[i] * sectorAmout;
 				memory[indexMemory] = '1';
 				indexMemory++;
 				j = 1;
-				while((j < amoutSectors)&&(indexText < text.length()))
+				while((j < sectorAmout)&&(indexText < text.length()))
 				{
 					memory[indexMemory] = text[indexText];
 					indexMemory++;
 					indexText++;
+					j++;
+				}
+				//wypelnienie niewykorzystanej przestrzeni sektora znakami pustymi
+				//w celu wyeliminowania niechcianych danych(smieci - pozostalosci po porzednich plikach)
+				while ((j < sectorAmout) && (indexText >= text.length()))
+				{
+					memory[indexMemory] = '\0';
+					indexMemory++;
 					j++;
 				}
 			}
@@ -75,20 +87,39 @@ class Disc
 		{
 			int amoutIndexesOfBlock = 0;
 			int* indexes = getIndexesOfBlock(numberSector, amoutIndexesOfBlock);
-			char* content = new char[amoutIndexesOfBlock*amoutSectors];
+			char* content = getEmptyArray(amoutIndexesOfBlock*sectorAmout);
 			int x = 0;
 			for (int i = 0; i < amoutIndexesOfBlock; i++)
 			{
 				char* block = getBlock(indexes[i]);
-				for (int j = 1; j < amoutSectors && block[i]!='\0'; j++)
+				for (int j = 1; j < sectorAmout && block[i]!='\0'; j++)
 					content[x++] = block[j];	
 			}
 			return content;
 		}
+		void DeleteFile(int indexBlockNumber)
+		{
+			int indexesBlockAmout = 0;
+			int* indexes = getIndexesOfBlock(indexBlockNumber, indexesBlockAmout);
+
+			for (int i = 0; i < indexesBlockAmout; i++)
+				sectors[indexes[i]]= 0;
+			
+			sectors[indexBlockNumber] = 0;
+		}
 	private:
+		char* getEmptyArray(int length)
+		{
+			char* emptyArray = new char[length];
+			for (int i = 0; i < length; i++)
+			{
+				emptyArray[i] = '\0';
+			}
+			return emptyArray;
+		}
 		int findFirstFreeSectorOrDefault()
 		{
-			for (int i = 0; i < amoutSectors; i++)
+			for (int i = 0; i < sectorAmout; i++)
 			if (sectors[i] == 0)
 				return i;
 
@@ -117,13 +148,9 @@ class Disc
 		}
 		char* getBlock(int numberSector)
 		{
-			int startIndex = numberSector * amoutSectors;
-			char* block = new char[amoutSectors];
-			for (int i = 0; i < amoutSectors; i++)
-			{
-				block[i] = '\0';
-			}
-			memcpy(block, &memory[startIndex], amoutSectors);
+			int startIndex = numberSector * sectorAmout;
+			char* block = getEmptyArray(sectorAmout);
+			memcpy(block, &memory[startIndex], sectorAmout);
 			return block;
 		}
 		int* getIndexesOfBlock(int numberSector, int& amountIndexesOfBlock)
@@ -153,6 +180,5 @@ class Disc
 			return indexes;
 		}
 };
-
 
 #endif DISC_H

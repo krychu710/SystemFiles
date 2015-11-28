@@ -2,6 +2,24 @@
 #include <cstdlib>
 
 
+void OpenFile(SystemFiles* systemFiles)
+{
+	string name;
+	cout << "Podaj nazwe pliku: ";
+	cin.ignore();
+	getline(cin, name);
+	char* content = systemFiles->OpenFile(name);
+	system("cls");
+	if (content != "")
+	{
+		cout << "Tresc pliku o nazwie " << name << ":" << endl;
+		cout << content << endl;
+	}
+	else
+		cout << "Plik o podanej nazwie nie istnieje :/";
+	getchar();
+}
+
 
 
 int main()
@@ -32,17 +50,21 @@ int main()
 			}
 			case '2':
 			{
-				systemFiles->ShowSectors();
-				systemFiles->ShowMemory();
+				cout << systemFiles->ShowMemoryv2();
 				break;
 			}
 			case '3':
+			{
+				OpenFile(systemFiles);
+				break;
+			}
+			case '4':
 			{
 				string name;
 				cout << "Podaj nazwe pliku: ";
 				cin.ignore();
 				getline(cin, name);
-				systemFiles->OpenFile(name);
+				systemFiles->DeleteFile(name);
 				break;
 			}
 
