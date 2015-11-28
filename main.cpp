@@ -50,7 +50,7 @@ int main()
 			}
 			case '2':
 			{
-				cout << systemFiles->ShowMemoryv2();
+				cout << systemFiles->ShowMemory();
 				break;
 			}
 			case '3':

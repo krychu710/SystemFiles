@@ -22,9 +22,10 @@ class SystemFiles
 		}
 		File* AddFile(string name, string text)
 		{
-
-			int numberIndexBlock = disc->TrySaveFile(text);
-			File* file = new File(name, numberIndexBlock);
+			int realSize = 0;
+			int occupiedSpace = 0;
+			int numberIndexBlock = disc->TrySaveFile(text, occupiedSpace, realSize);
+			File* file = new File(name, numberIndexBlock, occupiedSpace, realSize);
 			files.push_back(file);
 
 			return file;
