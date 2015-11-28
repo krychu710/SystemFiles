@@ -1,6 +1,17 @@
 #include "SystemFiles.h"
 #include <cstdlib>
 
+
+void DeleteFile(SystemFiles* systemFiles)
+{
+	string name;
+	cout << "Podaj nazwe pliku: ";
+	cin.ignore();
+	getline(cin, name);
+	systemFiles->DeleteFile(name);
+
+}
+
 void AddFile(SystemFiles* systemFiles)
 {
 	system("cls");
@@ -40,7 +51,7 @@ int main()
 	while (1)
 	{
 		char item = '0';
-
+		system("cls");
 		cout << "Twoje pliki: " << endl;
 		cout << "-----------------------------------------------------------------------" << endl;
 		cout << "|     Nazwa     | Z. miejsce | R. rozmiar |      Data utworzenia      |" << endl;
@@ -54,7 +65,7 @@ int main()
 
 		cout << "-----------------------------------------------------------------------" << endl;
 
-		cout << endl <<"1. Dodaj plik  2. Pokaz tablice indeksowa oraz pamiec 3. Otworz plik " << endl;
+		cout << endl <<"1. Dodaj plik  2. Pokaz tablice indeksowa oraz pamiec 3. Otworz plik  4. Usun 5. Wyswietl katalog" << endl;
 		cin >> item;
 		switch (item)
 		{
@@ -65,7 +76,9 @@ int main()
 			}
 			case '2':
 			{
-				cout << systemFiles->MemoryToString();
+				cout << systemFiles->MemoryToString()<<endl <<endl;
+				cout << systemFiles->SectorsToString() << endl;
+				system("pause");
 				break;
 			}
 			case '3':
@@ -75,17 +88,16 @@ int main()
 			}
 			case '4':
 			{
-				string name;
-				cout << "Podaj nazwe pliku: ";
-				cin.ignore();
-				getline(cin, name);
-				systemFiles->DeleteFile(name);
+				DeleteFile(systemFiles);
 				break;
 			}
-
+			case '5':
+			{
+				cout << systemFiles->CatalogToString() << endl;
+				system("pause");
+				break;
+			}
 		}
-
-		cout << "--------------------" << endl;
 	}
 	return 0;
 }

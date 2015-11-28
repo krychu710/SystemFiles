@@ -2,9 +2,9 @@
 #define SYSTEMFILES_H
 
 #include "File.h"
-#include <list>
 #include <sstream>
 #include <iomanip>
+#include "Catalog.h"
 
 class SystemFiles
 {
@@ -14,11 +14,14 @@ class SystemFiles
 		int sectorLenght;
 		Disc* disc;
 		list<File*> files;
+		Catalog* catalog;
 	public:
 		SystemFiles()
 		{
 			sectorLenght = sizeMemory / sizeSector;
 			disc = new Disc(sizeMemory, sizeSector);
+			files = list<File*>();
+			catalog = new Catalog("root", &files);
 		}
 		File* AddFile(string name, string text)
 		{
@@ -36,7 +39,7 @@ class SystemFiles
 			int* sectors = disc->getSectors();
 			for (int i = 0; i < sizeSector; i++)
 			{
-				stream << "[" << i << "]" << ": " << sectors[i];
+				stream << "[" << i << "]" << ": " << sectors[i] << " ";
 				if (i == 7)
 					stream << endl;
 			}
@@ -106,6 +109,20 @@ class SystemFiles
 			}
 			disc->DeleteFile(file->GetNumberSector());
 			files.remove(file);
+		}
+		string CatalogToString()
+		{
+			stringstream stream;
+
+			stream << catalog->getName() << ": " << endl;
+			int amoutFiles = catalog->getAmoutFiles();
+			string* files = catalog->getNamesFilesInside();
+			for (int i = 0; i < amoutFiles; i++)
+			{
+				stream << files[i] << endl;
+			}
+
+			return stream.str();
 		}
 };
 
