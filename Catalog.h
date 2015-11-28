@@ -13,12 +13,12 @@ class Catalog
 			this->name = name;
 			this->files = files;
 		}
-		int getAmoutFiles() { return checkAmoutFiles(); }
+		int getAmountFiles() { return checkAmountFiles(); }
 		string getName() { return name; }
 		string* getNamesFilesInside()
 		{
-			int amout = checkAmoutFiles();
-			string* names = new string[amout];
+			int amount = checkAmountFiles();
+			string* names = new string[amount];
 			int j=0;
 			for (list<File*>::iterator i = files->begin(); i != files->end(); i++)
 			{
@@ -28,7 +28,7 @@ class Catalog
 			return names;
 		}
 	private:
-		int checkAmoutFiles()
+		int checkAmountFiles()
 		{
 			int j = 0;
 			for (list<File*>::iterator i = files->begin(); i != files->end(); i++)

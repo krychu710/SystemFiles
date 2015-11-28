@@ -11,14 +11,14 @@ class SystemFiles
 	private:
 		const int sizeMemory = 256;
 		const int sizeSector = 16;
-		int sectorLenght;
+		int amountSectors;
 		Disc* disc;
 		list<File*> files;
 		Catalog* catalog;
 	public:
 		SystemFiles()
 		{
-			sectorLenght = sizeMemory / sizeSector;
+			amountSectors = sizeMemory / sizeSector;
 			disc = new Disc(sizeMemory, sizeSector);
 			files = list<File*>();
 			catalog = new Catalog("root", &files);
@@ -51,14 +51,14 @@ class SystemFiles
 			int indexMemory = 0;
 			stringstream stream;
 			char* memory = disc->getMemory();
-			for (int i = 0; i < sectorLenght; i+=4)
+			for (int i = 0; i < amountSectors; i+=4)
 			{
-				indexMemory = i*sectorLenght;
+				indexMemory = i*amountSectors;
 				stream << " Sektor "<< i <<"\t    Sektor "<<i+1 <<"\t       Sektor "<< i+2 <<"          Sektor "<< i+3 <<endl;
-				for (int j = 0; j < sectorLenght/2; j++)
+				for (int j = 0; j < amountSectors/2; j++)
 				{
 					int index = indexMemory;
-					for (int z = 0; z < sectorLenght/2; z++)
+					for (int z = 0; z < amountSectors/2; z++)
 					{
 						stringstream tmpStream;
 						tmpStream << "[" << index << "]: " << memory[index];
@@ -91,7 +91,7 @@ class SystemFiles
 					break;
 				}
 			}
-			if (numberSector>-1 && numberSector < sectorLenght)
+			if (numberSector>-1 && numberSector < amountSectors)
 				return disc->TryOpenFile(numberSector);
 			else return "";
 		}
@@ -115,9 +115,9 @@ class SystemFiles
 			stringstream stream;
 
 			stream << catalog->getName() << ": " << endl;
-			int amoutFiles = catalog->getAmoutFiles();
+			int amountFiles = catalog->getAmountFiles();
 			string* files = catalog->getNamesFilesInside();
-			for (int i = 0; i < amoutFiles; i++)
+			for (int i = 0; i < amountFiles; i++)
 			{
 				stream << files[i] << endl;
 			}
