@@ -37,7 +37,7 @@ class Disc
 			return memory;
 		}
 		//zapis do pliku na dysku 
-		int TrySaveFile(string text)
+		int TrySaveFile(string text, int &size, int &occupiedSpace)
 		{
 			double amoutReserveSectors = text.length();
 			amoutReserveSectors /= sectorAmout;
@@ -46,6 +46,9 @@ class Disc
 			int numberIndexBlock = findFirstFreeSectorOrDefault();
 			sectors[numberIndexBlock] = 1;
 			int* numbersIndexMemory = findFewFreeSectorOrDefault(amoutReserveSectors);
+
+			occupiedSpace = text.length() + (amoutReserveSectors * 2) + 1;
+			size = (amoutReserveSectors + 1) * sectorSize;
 
 			//zapis bloku indeksowego
 			int beginIndex = numberIndexBlock * sectorAmout;
