@@ -38,7 +38,7 @@ class SystemFiles
 			}
 		}
 
-		string ShowMemoryv2()
+		string ShowMemory()
 		{
 			int indexMemory = 0;
 			stringstream stream;
@@ -66,38 +66,6 @@ class SystemFiles
 				}
 			}
 			
-			return stream.str();
-		}
-		string ShowMemory()
-		{
-			stringstream stream;
-			int indexMemoryOne = 0;
-			int indexMemoryTwo = 0;
-			char* memory = disc->getMemory();
-			for (int i = 0; i < sectorLenght; i++)
-			{
-				stream << "Sektor " << i;
-				int j = 0;
-				int z = 0;
-				stream << endl;
-				for (int x = 2; x > 0; x--)
-				{
-					stream << endl;
-					for (; j < sizeSector / x; j++)
-					{
-						stringstream tmp;
-						tmp << "[" << indexMemoryOne++ << "]";
-						stream << setw(6) << tmp.str();
-					}
-					stream << endl;
-					for (; z < sizeSector / x; z++)
-					{
-						stringstream tmp;
-						tmp << "\"" << memory[indexMemoryTwo++] << "\"";
-						stream << setw(6) << tmp.str();
-					}
-				}
-			}
 			return stream.str();
 		}
 		void GetNamesFiles()
