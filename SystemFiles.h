@@ -30,16 +30,20 @@ class SystemFiles
 
 			return file;
 		}
-		void ShowSectors()
+		string SectorsToString()
 		{
+			stringstream stream;
 			int* sectors = disc->getSectors();
 			for (int i = 0; i < sizeSector; i++)
 			{
-				cout << "[" << i << "]" << " - " << sectors[i] << endl;
+				stream << "[" << i << "]" << ": " << sectors[i];
+				if (i == 7)
+					stream << endl;
 			}
+			return stream.str();
 		}
 
-		string ShowMemory()
+		string MemoryToString()
 		{
 			int indexMemory = 0;
 			stringstream stream;
@@ -69,10 +73,9 @@ class SystemFiles
 			
 			return stream.str();
 		}
-		void GetNamesFiles()
+		list<File*> GetNamesFiles()
 		{
-			for (list<File*>::iterator i = files.begin(); i != files.end(); i++)
-				cout << "-" << (*i)->GetName() << endl;
+			return files;
 		}
 		char* OpenFile(string name)
 		{
