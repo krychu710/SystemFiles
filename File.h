@@ -26,6 +26,7 @@ class File
 		int GetNumberSector() { return numberSector; }
 		int GetOccupiedSpace() { return occupiedSpace; }
 		int GetRealSize() { return realSize; }
+		int GetAccess() { return access; }
 		char* DateCreatedToChar() { return ctime(&dateCreated); }
 };
 

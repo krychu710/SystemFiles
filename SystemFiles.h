@@ -26,16 +26,31 @@ public:
 		catalog = new Catalog("root", &files);
 		saveDefaultData();
 	}
-	int AddFile(string name, string text)
+	int AddFile(string fileName, string fileContent, int access = 1)
 	{
 		int realSize = 0;
 		int occupiedSpace = 0;
-		int numberIndexBlock = disc->TrySaveFile(text, occupiedSpace, realSize);
+		int numberIndexBlock = disc->TrySaveFile(fileContent, realSize, occupiedSpace);
 		if (numberIndexBlock == -1)
 			return -1;
-		File* file = new File(name, numberIndexBlock, occupiedSpace, realSize);
+		File* file = new File(fileName, numberIndexBlock, occupiedSpace, realSize, access);
 		files.push_back(file);
-
+		return 0;
+	}
+	int EditFile(string newFileName, string oldFileName, string fileContent)
+	{
+		int realSize = 0;
+		int numberIndexBlock = checkNumberIndexBlock(oldFileName);
+		if (numberIndexBlock != -1)
+		{
+			File* oldFile = getFile(oldFileName);
+			int occupiedSpace = oldFile->GetOccupiedSpace();
+			if (disc->EditFile(numberIndexBlock, fileContent, occupiedSpace, realSize) == -1)
+				return -1;
+			File* file = new File(newFileName, numberIndexBlock, occupiedSpace, realSize);
+			files.push_back(file);
+			files.remove(oldFile);
+		}
 		return 0;
 	}
 	string SectorsToString()
@@ -85,33 +100,17 @@ public:
 	{
 		return files;
 	}
-	char* OpenFile(string name)
+	char* OpenFile(string fileName)
 	{
-		int numberSector = -1;
-		for (list<File*>::iterator i = files.begin(); i != files.end(); i++)
-		{
-			if ((*i)->GetName() == name)
-			{
-				numberSector = (*i)->GetNumberSector();
-				break;
-			}
-		}
+		int numberSector = checkNumberIndexBlock(fileName);
 		if (numberSector > -1 && numberSector < amountSectors)
 			return disc->TryOpenFile(numberSector);
 		else return "";
 	}
-	void DeleteFile(string name)
+	void DeleteFile(string fileName)
 	{
-		File* file;
 		int numberSector = -1;
-		for (list<File*>::iterator i = files.begin(); i != files.end(); i++)
-		{
-			if ((*i)->GetName() == name)
-			{
-				file = *i;
-				break;
-			}
-		}
+		File* file = getFile(fileName);
 		disc->DeleteFile(file->GetNumberSector());
 		files.remove(file);
 	}
@@ -128,13 +127,19 @@ public:
 		}
 		return stream.str();
 	}
-
+	bool FileIsOnlyRead(string fileName)
+	{
+		File* file = getFile(fileName);
+		if (file->GetAccess() == 0)
+			return true;
+		else return false;
+	}
 
 	private:
 		void saveDefaultData()
 		{
 			int amount = 5;
-			string names[] = {"plik1.txt", "plik2.txt", "plik3.txt", "plik4.txt", "plik5.txt"};
+			string names[] = {"plik1.txt", "plik2.txt", "plik3.txt", "plik5.txt", "plik4.txt"};
 			SaveDefaultData* save = new SaveDefaultData(names, amount);
 			string* data = save->Save();
 			for (int i = 0; i < amount; i++)
@@ -142,7 +147,20 @@ public:
 				AddFile(names[i], data[i]);
 			}
 			delete save;
-
+		}
+		int checkNumberIndexBlock(string fileName)
+		{
+			for (list<File*>::iterator i = files.begin(); i != files.end(); i++)
+				if ((*i)->GetName() == fileName)
+					return (*i)->GetNumberSector();
+			return -1;
+		}
+		File* getFile(string fileName)
+		{
+			for (list<File*>::iterator i = files.begin(); i != files.end(); i++)
+				if ((*i)->GetName() == fileName)
+					return *i;
+			return NULL;
 		}
 };
 

@@ -50,8 +50,8 @@ class Disc
 			sectors[numberIndexBlock] = 1;
 			int* numbersIndexMemory = findFewFreeSectorOrDefault(amountReserveSectors);
 
-			occupiedSpace = text.length() + (amountReserveSectors * 2) + 1;
-			size = (amountReserveSectors + 1) * sectorSize;
+			size = text.length() + (amountReserveSectors * 2) + 1;
+			occupiedSpace = (amountReserveSectors + 1) * sectorSize;
 
 			//zapis bloku indeksowego
 			int beginIndex = numberIndexBlock * sectorAmount;
@@ -62,6 +62,8 @@ class Disc
 			{
 				memory[i] = numbersIndexMemory[j] + '0';
 			}
+
+			//uzupelnienie pozostalych blokow indeksowych pustymi znakami
 			int endSector = (i + sectorAmount - amountReserveSectors);
 			for (; i < endSector; i++)
 			{
@@ -94,6 +96,24 @@ class Disc
 			}
 			return numberIndexBlock;
 		}
+		int EditFile(int numberSector, string text, int &occupiedSpace, int &size)
+		{
+			double requiredSpace = text.length();
+			requiredSpace /= sectorAmount;
+			requiredSpace = ceil(requiredSpace);
+			double actuallyOccupiedSpace = (occupiedSpace / sectorAmount) - 1;
+
+			if (requiredSpace > actuallyOccupiedSpace)
+			{
+				if ((requiredSpace - actuallyOccupiedSpace) > AmoutFreeSectors())
+					return -1;
+			}
+			DeleteFile(numberSector);
+			if (TrySaveFile(text, size, occupiedSpace) != -1)
+				return 0;
+			else return -1;
+		}
+
 		char* TryOpenFile(int numberSector)
 		{
 			int amountIndexesOfBlock = 0;
@@ -197,7 +217,6 @@ class Disc
 					i++;
 				}
 			}
-			
 			return indexes;
 		}
 };
