@@ -10,7 +10,7 @@ class Disc
 	private:
 		char* memory;
 		int* sectors;
-		int sectorAmount;
+		int sectorsAmount;
 		int sectorSize;
 		int discSize;
 	public:
@@ -18,7 +18,7 @@ class Disc
 		{
 			this->discSize = discSize;
 			this->sectorSize = sectorSize;
-			sectorAmount = discSize / sectorSize; 
+			sectorsAmount = discSize / sectorSize; 
 			sectors = new int[sectorSize];
 			memory = getEmptyArray(discSize);
 
@@ -40,7 +40,7 @@ class Disc
 		int TrySaveFile(string text, int &size, int &occupiedSpace)
 		{
 			double amountReserveSectors = text.length();
-			amountReserveSectors /= sectorAmount;
+			amountReserveSectors /= sectorsAmount;
 			amountReserveSectors = ceil(amountReserveSectors);
 
 			if (AmoutFreeSectors()<amountReserveSectors + 1)
@@ -54,7 +54,7 @@ class Disc
 			occupiedSpace = (amountReserveSectors + 1) * sectorSize;
 
 			//zapis bloku indeksowego
-			int beginIndex = numberIndexBlock * sectorAmount;
+			int beginIndex = numberIndexBlock * sectorsAmount;
 			memory[beginIndex] = '0';
 			int i, j;
 			
@@ -64,7 +64,7 @@ class Disc
 			}
 
 			//uzupelnienie pozostalych blokow indeksowych pustymi znakami
-			int endSector = (i + sectorAmount - amountReserveSectors);
+			int endSector = (i + sectorsAmount - amountReserveSectors);
 			for (; i < endSector; i++)
 			{
 				memory[i] = '\0';
@@ -74,11 +74,11 @@ class Disc
 			int indexText = 0;
 			for (i = 0; i < amountReserveSectors; i++)
 			{
-				int indexMemory = numbersIndexMemory[i] * sectorAmount;
+				int indexMemory = numbersIndexMemory[i] * sectorsAmount;
 				memory[indexMemory] = '1';
 				indexMemory++;
 				j = 1;
-				while((j < sectorAmount)&&(indexText < text.length()))
+				while((j < sectorsAmount)&&(indexText < text.length()))
 				{
 					memory[indexMemory] = text[indexText];
 					indexMemory++;
@@ -87,7 +87,7 @@ class Disc
 				}
 				//wypelnienie niewykorzystanej przestrzeni sektora znakami pustymi
 				//w celu wyeliminowania niechcianych danych(smieci - pozostalosci po porzednich plikach)
-				while ((j < sectorAmount) && (indexText >= text.length()))
+				while ((j < sectorsAmount) && (indexText >= text.length()))
 				{
 					memory[indexMemory] = '\0';
 					indexMemory++;
@@ -96,52 +96,52 @@ class Disc
 			}
 			return numberIndexBlock;
 		}
-		int EditFile(int numberSector, string text, int &occupiedSpace, int &size)
+		int EditFile(int numberIndexSector, string text, int &occupiedSpace, int &size)
 		{
 			double requiredSpace = text.length();
-			requiredSpace /= sectorAmount;
+			requiredSpace /= sectorsAmount;
 			requiredSpace = ceil(requiredSpace);
-			double actuallyOccupiedSpace = (occupiedSpace / sectorAmount) - 1;
+			double actuallyOccupiedSpace = (occupiedSpace / sectorsAmount) - 1;
 
 			if (requiredSpace > actuallyOccupiedSpace)
 			{
 				if ((requiredSpace - actuallyOccupiedSpace) > AmoutFreeSectors())
 					return -1;
 			}
-			DeleteFile(numberSector);
+			DeleteFile(numberIndexSector);
 			if (TrySaveFile(text, size, occupiedSpace) != -1)
 				return 0;
 			else return -1;
 		}
 
-		char* TryOpenFile(int numberSector)
+		char* TryOpenFile(int numberIndexSector)
 		{
 			int amountIndexesOfBlock = 0;
-			int* indexes = getIndexesOfBlock(numberSector, amountIndexesOfBlock);
-			char* content = getEmptyArray(amountIndexesOfBlock*sectorAmount);
+			int* indexes = getNumbersSecorsWithData(numberIndexSector, amountIndexesOfBlock);
+			char* content = getEmptyArray(amountIndexesOfBlock*sectorsAmount);
 			int x = 0;
 			for (int i = 0; i < amountIndexesOfBlock; i++)
 			{
-				char* block = getBlock(indexes[i]);
-				for (int j = 1; j < sectorAmount && block[i]!='\0'; j++)
-					content[x++] = block[j];	
+				char* sector = getSector(indexes[i]);
+				for (int j = 1; j < sectorsAmount && sector[i]!='\0'; j++)
+					content[x++] = sector[j];	
 			}
 			return content;
 		}
-		void DeleteFile(int indexBlockNumber)
+		void DeleteFile(int numberIndexSector)
 		{
 			int indexesBlockAmount = 0;
-			int* indexes = getIndexesOfBlock(indexBlockNumber, indexesBlockAmount);
+			int* indexes = getNumbersSecorsWithData(numberIndexSector, indexesBlockAmount);
 
 			for (int i = 0; i < indexesBlockAmount; i++)
 				sectors[indexes[i]]= 0;
 			
-			sectors[indexBlockNumber] = 0;
+			sectors[numberIndexSector] = 0;
 		}
 		int AmoutFreeSectors()
 		{
 			int freeSectors = 0;
-			for (int i = 0; i < sectorAmount; i++)
+			for (int i = 0; i < sectorsAmount; i++)
 			{
 				if (sectors[i] == 0)
 					freeSectors++;
@@ -160,7 +160,7 @@ class Disc
 		}
 		int findFirstFreeSectorOrDefault()
 		{
-			for (int i = 0; i < sectorAmount; i++)
+			for (int i = 0; i < sectorsAmount; i++)
 			if (sectors[i] == 0)
 				return i;
 
@@ -187,37 +187,37 @@ class Disc
 			}
 			return freeSectors;
 		}
-		char* getBlock(int numberSector)
+		char* getSector(int numberIndexSector)
 		{
-			int startIndex = numberSector * sectorAmount;
-			char* block = getEmptyArray(sectorAmount);
-			memcpy(block, &memory[startIndex], sectorAmount);
-			return block;
+			int startIndex = numberIndexSector * sectorsAmount;
+			char* sector = getEmptyArray(sectorsAmount);
+			memcpy(sector, &memory[startIndex], sectorsAmount);
+			return sector;
 		}
-		int* getIndexesOfBlock(int numberSector, int& amountIndexesOfBlock)
+		int* getNumbersSecorsWithData(int numberIndexSector, int& amountIndexesOfBlock)
 		{
-			char* indexBlock = getBlock(numberSector);
+			char* indexSector = getSector(numberIndexSector);
 			int i = 0;
-			int* indexes;
-			if (indexBlock[i] == '0')
+			int* numbersSectorsWithData;
+			if (indexSector[i] == '0')
 			{
 				int j = 0;
 				i = 1;
-				while (indexBlock[i] != '\0')
+				while (indexSector[i] != '\0')
 				{
 					j++;
 					i++;
 				}
 				amountIndexesOfBlock = j;
-				indexes = new int[amountIndexesOfBlock];
+				numbersSectorsWithData = new int[amountIndexesOfBlock];
 				i = 1;
-				while (indexBlock[i] != '\0' && i <= j)
+				while (indexSector[i] != '\0' && i <= j)
 				{
-					indexes[i-1] = indexBlock[i]-'0';
+					numbersSectorsWithData[i - 1] = indexSector[i] - '0';
 					i++;
 				}
 			}
-			return indexes;
+			return numbersSectorsWithData;
 		}
 };
 

@@ -13,7 +13,7 @@ class File
 		time_t dateCreated;
 		int access;
 	public:
-		File(string name, int numberSector, int occupiedSpace, int realSize, int access = 0)
+		File(string name, int numberSector, int occupiedSpace, int realSize, int access = 1)
 		{
 			this->name = name;
 			this->numberSector = numberSector;

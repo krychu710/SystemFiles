@@ -10,6 +10,8 @@ void DeleteFile(SystemFiles* systemFiles)
 	getline(cin, fileName);
 	if (systemFiles->FileIsOnlyRead(fileName))
 		cout << "Plik systemowy! Nie mozna usuwac.";
+	else
+		systemFiles->DeleteFile(fileName);
 	getchar();
 }
 
@@ -88,6 +90,7 @@ int main()
 	while (1)
 	{
 		char item = '0';
+		system("pause");
 		system("cls");
 		cout << "Twoje pliki: " << endl;
 		cout << "-----------------------------------------------------------------------" << endl;
