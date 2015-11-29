@@ -43,6 +43,9 @@ class Disc
 			amountReserveSectors /= sectorAmount;
 			amountReserveSectors = ceil(amountReserveSectors);
 
+			if (AmoutFreeSectors()<amountReserveSectors + 1)
+				return -1;
+
 			int numberIndexBlock = findFirstFreeSectorOrDefault();
 			sectors[numberIndexBlock] = 1;
 			int* numbersIndexMemory = findFewFreeSectorOrDefault(amountReserveSectors);
@@ -58,6 +61,11 @@ class Disc
 			for (i = beginIndex + 1, j =0; j < amountReserveSectors; i++, j++)
 			{
 				memory[i] = numbersIndexMemory[j] + '0';
+			}
+			int endSector = (i + sectorAmount - amountReserveSectors);
+			for (; i < endSector; i++)
+			{
+				memory[i] = '\0';
 			}
 
 			//zapis bloku z danymi
@@ -109,6 +117,16 @@ class Disc
 				sectors[indexes[i]]= 0;
 			
 			sectors[indexBlockNumber] = 0;
+		}
+		int AmoutFreeSectors()
+		{
+			int freeSectors = 0;
+			for (int i = 0; i < sectorAmount; i++)
+			{
+				if (sectors[i] == 0)
+					freeSectors++;
+			}
+			return freeSectors;
 		}
 	private:
 		char* getEmptyArray(int length)

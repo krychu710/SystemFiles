@@ -22,7 +22,8 @@ void AddFile(SystemFiles* systemFiles)
 	cout << "Podaj tresc: ";
 	string text;
 	getline(cin, text);
-	systemFiles->AddFile(name, text);
+	if (systemFiles->AddFile(name, text) == -1)
+		cout << "Za ma³o miejsca na dysku!!";
 	getchar();
 }
 void OpenFile(SystemFiles* systemFiles)
