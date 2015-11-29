@@ -5,6 +5,8 @@
 #include <sstream>
 #include <iomanip>
 #include "Catalog.h"
+#include "SaveDefaultData.h"
+
 
 class SystemFiles
 {
@@ -22,6 +24,7 @@ class SystemFiles
 			disc = new Disc(sizeMemory, sizeSector);
 			files = list<File*>();
 			catalog = new Catalog("root", &files);
+			saveDefaultData();
 		}
 		File* AddFile(string name, string text)
 		{
@@ -123,6 +126,20 @@ class SystemFiles
 			}
 
 			return stream.str();
+		}
+	private:
+		void saveDefaultData()
+		{
+
+			string names[] = {"plik1.txt", "plik2.txt", "plik3.txt", "plik4.txt", "plik5.txt"};
+			SaveDefaultData* save = new SaveDefaultData(names, 3);
+			string* data = save->Save();
+			for (int i = 0; i < 3; i++)
+			{
+				AddFile(names[i], data[i]);
+			}
+			delete save;
+
 		}
 };
 

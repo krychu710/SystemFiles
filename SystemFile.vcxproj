@@ -82,6 +82,7 @@
     <ClInclude Include="Catalog.h" />
     <ClInclude Include="Disc.h" />
     <ClInclude Include="File.h" />
+    <ClInclude Include="SaveDefaultData.h" />
     <ClInclude Include="SystemFiles.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

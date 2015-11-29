@@ -32,5 +32,8 @@
     <ClInclude Include="Catalog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SaveDefaultData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

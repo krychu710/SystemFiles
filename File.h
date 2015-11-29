@@ -11,14 +11,16 @@ class File
 		int occupiedSpace;
 		int realSize;
 		time_t dateCreated;
+		int access;
 	public:
-		File(string name, int numberSector, int occupiedSpace, int realSize)
+		File(string name, int numberSector, int occupiedSpace, int realSize, int access = 0)
 		{
 			this->name = name;
 			this->numberSector = numberSector;
 			this->occupiedSpace = occupiedSpace;
 			this->realSize = realSize;
 			this->dateCreated = time(0);
+			this->access = access;
 		}
 		string GetName() { return name; }
 		int GetNumberSector() { return numberSector; }
