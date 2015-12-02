@@ -56,6 +56,7 @@ class Disc
 			//zapis bloku indeksowego
 			int beginIndex = numberIndexBlock * sectorsAmount;
 			memory[beginIndex] = '0';
+			cout << "Sektor indeksowy: " << numberIndexBlock << endl;
 			int i, j;
 			
 			for (i = beginIndex + 1, j =0; j < amountReserveSectors; i++, j++)
@@ -70,11 +71,13 @@ class Disc
 				memory[i] = '\0';
 			}
 
+			cout << "Sektory z danymi: ";
 			//zapis bloku z danymi
 			int indexText = 0;
 			for (i = 0; i < amountReserveSectors; i++)
 			{
 				int indexMemory = numbersIndexMemory[i] * sectorsAmount;
+				cout << numbersIndexMemory[i] << " ";
 				memory[indexMemory] = '1';
 				indexMemory++;
 				j = 1;
@@ -93,6 +96,7 @@ class Disc
 					indexMemory++;
 					j++;
 				}
+				cout << endl;
 			}
 			return numberIndexBlock;
 		}

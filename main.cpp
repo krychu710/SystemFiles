@@ -17,7 +17,6 @@ void DeleteFile(SystemFiles* systemFiles)
 
 void EditFile(SystemFiles* systemFiles)
 {
-	system("cls");
 	string oldName;
 	cout << "Podaj nazwe pliku: ";
 	cin.ignore();
@@ -41,8 +40,11 @@ void EditFile(SystemFiles* systemFiles)
 		cout << "Podaj tresc: ";
 		string text;
 		getline(cin, text);
-		if (systemFiles->EditFile(newName, oldName, text) == -1)
+		int result = systemFiles->EditFile(newName, oldName, text);
+		if (result == -1)
 			cout << "Za ma³o miejsca na dysku!!";
+		if (result == -2)
+			cout << "Nie ma pliku o podanej nazwie!";
 	}
 	getchar();
 }
@@ -60,9 +62,12 @@ void AddFile(SystemFiles* systemFiles)
 	cout << "Ustal prawa dostepu 0. Tylko odczyt 1. Pelna kontrola  : ";
 	int law;
 	cin >> law;
-	if (systemFiles->AddFile(name, text, law) == -1)
+	int result = systemFiles->AddFile(name, text, law);
+	if (result == -1)
 		cout << "Za ma³o miejsca na dysku!!";
-	getchar();
+	if (result == -2)
+		cout << "Plik o podanej nazwie juz istnieje!";
+	system("pause");
 }
 void OpenFile(SystemFiles* systemFiles)
 {
@@ -76,6 +81,8 @@ void OpenFile(SystemFiles* systemFiles)
 	{
 		cout << "Tresc pliku o nazwie " << name << ":" << endl;
 		cout << content << endl;
+		if (systemFiles->FileIsOnlyRead(name))
+			cout << "Plik systemowy, tylko do odczytu." << endl;
 	}
 	else
 		cout << "Plik o podanej nazwie nie istnieje :/";
@@ -83,29 +90,27 @@ void OpenFile(SystemFiles* systemFiles)
 }
 
 
-
-int main()
+void Menu()
 {
 	SystemFiles* systemFiles = new SystemFiles();
 	while (1)
 	{
 		char item = '0';
-		system("pause");
 		system("cls");
 		cout << "Twoje pliki: " << endl;
-		cout << "-----------------------------------------------------------------------" << endl;
-		cout << "|     Nazwa     | Z. miejsce | R. rozmiar |      Data utworzenia      |" << endl;
-		cout << "-----------------------------------------------------------------------" << endl;
+		cout << "-----------------------------------------------------------------------------" << endl;
+		cout << "|     Nazwa     | Z. miejsce | R. rozmiar | Prawa |    Data utworzenia      |" << endl;
+		cout << "-----------------------------------------------------------------------------" << endl;
 		list<File*> files = systemFiles->GetNamesFiles();
 		if (!files.empty())
 		for (list<File*>::iterator i = files.begin(); i != files.end(); i++)
-			cout << "|" << setw(14) << (*i)->GetName() << " |" << setw(10) << (*i)->GetOccupiedSpace() << "B |" << setw(10) << (*i)->GetRealSize() << "B |" << setw(26) << (*i)->DateCreatedToChar();
+			cout << "|" << setw(14) << (*i)->GetName() << " |" << setw(10) << (*i)->GetOccupiedSpace() << "B |" << setw(10) << (*i)->GetRealSize() << "B |" << setw(6) << (*i)->GetAccess() << " |" << setw(26) << (*i)->DateCreatedToChar();
 		else
 			cout << "|                 BRAK PLIKOW NA DYSKU! " << endl;
 
-		cout << "-----------------------------------------------------------------------" << endl;
-
-		cout << endl <<"1. Dodaj plik  2. Pokaz tablice indeksowa oraz pamiec 3. Otworz plik  4. Usun \n5. Wyswietl katalog  6. Edytuj plik" << endl;
+		cout << "-----------------------------------------------------------------------------" << endl;
+		cout << "Wolne miejsce na dysku: " << systemFiles->GetSizeFreeMemory() << "B" << endl;
+		cout << endl << "1. Dodaj plik  2. Pokaz tablice indeksowa oraz pamiec 3. Otworz plik  \n4. Usun 5. Wyswietl katalog  6. Edytuj plik  0. Wyjscie" << endl;
 		cin >> item;
 		switch (item)
 		{
@@ -116,7 +121,7 @@ int main()
 			}
 			case '2':
 			{
-				cout << systemFiles->MemoryToString()<<endl <<endl;
+				cout << systemFiles->MemoryToString() << endl << endl;
 				cout << systemFiles->SectorsToString() << endl;
 				system("pause");
 				break;
@@ -143,7 +148,17 @@ int main()
 				system("pause");
 				break;
 			}
+			case '0':
+				return;
+			default:
+				break;
+			
 		}
 	}
+}
+
+int main()
+{
+	Menu();
 	return 0;
 }
