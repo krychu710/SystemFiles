@@ -12,7 +12,7 @@ void DeleteFile(SystemFiles* systemFiles)
 		cout << "Plik systemowy! Nie mozna usuwac.";
 	else
 		systemFiles->DeleteFile(fileName);
-	getchar();
+	system("pause");
 }
 
 void EditFile(SystemFiles* systemFiles)
@@ -21,6 +21,12 @@ void EditFile(SystemFiles* systemFiles)
 	cout << "Podaj nazwe pliku: ";
 	cin.ignore();
 	getline(cin, oldName);
+	if (!systemFiles->FileExist(oldName))
+	{
+		cout << "Brak pliku o podanej nazwie";
+		system("pause");
+		return;
+	}
 	if (systemFiles->FileIsOnlyRead(oldName))
 	{
 		cout << "Plik systemowy! Nie mozna edytowac.";
@@ -40,13 +46,10 @@ void EditFile(SystemFiles* systemFiles)
 		cout << "Podaj tresc: ";
 		string text;
 		getline(cin, text);
-		int result = systemFiles->EditFile(newName, oldName, text);
-		if (result == -1)
-			cout << "Za ma³o miejsca na dysku!!";
-		if (result == -2)
-			cout << "Nie ma pliku o podanej nazwie!";
+		if (systemFiles->EditFile(newName, oldName, text) == -1)
+			cout << "Za ma³o miejsca na dysku!!" << endl;
 	}
-	getchar();
+	system("pause");
 }
 
 void AddFile(SystemFiles* systemFiles)
@@ -59,10 +62,10 @@ void AddFile(SystemFiles* systemFiles)
 	cout << "Podaj tresc: ";
 	string text;
 	getline(cin, text);
-	cout << "Ustal prawa dostepu 0. Tylko odczyt 1. Pelna kontrola  : ";
-	int law;
-	cin >> law;
-	int result = systemFiles->AddFile(name, text, law);
+	cout << "Ustal prawa dostepu \n0 - Tylko odczyt   1 - Pelna kontrola  : ";
+	int access;
+	cin >> access;
+	int result = systemFiles->AddFile(name, text, access);
 	if (result == -1)
 		cout << "Za ma³o miejsca na dysku!!";
 	if (result == -2)
@@ -75,6 +78,12 @@ void OpenFile(SystemFiles* systemFiles)
 	cout << "Podaj nazwe pliku: ";
 	cin.ignore();
 	getline(cin, name);
+	if (!systemFiles->FileExist(name))
+	{
+		cout << "Brak pliku o podanej nazwie";
+		system("pause");
+		return;
+	}
 	char* content = systemFiles->OpenFile(name);
 	system("cls");
 	if (content != "")
@@ -84,8 +93,6 @@ void OpenFile(SystemFiles* systemFiles)
 		if (systemFiles->FileIsOnlyRead(name))
 			cout << "Plik systemowy, tylko do odczytu." << endl;
 	}
-	else
-		cout << "Plik o podanej nazwie nie istnieje :/";
 	getchar();
 }
 

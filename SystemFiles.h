@@ -33,16 +33,12 @@ public:
 		int numberIndexBlock = disc->TrySaveFile(fileContent, realSize, occupiedSpace);
 		if (numberIndexBlock == -1)
 			return -1;
-		if (getFile(fileName))
-			return -2;
 		File* file = new File(fileName, numberIndexBlock, occupiedSpace, realSize, access);
 		files.push_back(file);
 		return 0;
 	}
 	int EditFile(string newFileName, string oldFileName, string fileContent)
 	{
-		if (!getFile(oldFileName))
-			return -2;
 		int realSize = 0;
 		int numberIndexBlock = checkNumberIndexBlock(oldFileName);
 		if (numberIndexBlock != -1)
@@ -106,8 +102,6 @@ public:
 	}
 	char* OpenFile(string fileName)
 	{
-		if (!getFile(fileName))
-			return "";
 		int numberSector = checkNumberIndexBlock(fileName);
 		if (numberSector > -1 && numberSector < amountSectors)
 			return disc->TryOpenFile(numberSector);
@@ -115,8 +109,6 @@ public:
 	}
 	void DeleteFile(string fileName)
 	{
-		if (!getFile(fileName))
-			return;
 		int numberSector = -1;
 		File* file = getFile(fileName);
 		disc->DeleteFile(file->GetNumberSector());
@@ -146,10 +138,15 @@ public:
 	{
 		return disc->AmoutFreeSectors()*sizeSector;
 	}
+	bool FileExist(string fileName)
+	{
+		if (getFile(fileName)) return true;
+		else return false;
+	}
 	private:
 		void saveDefaultData()
 		{
-			int amount = 5;
+			int amount = 3;
 			string names[] = {"plik1.txt", "plik2.txt", "plik3.txt", "plik5.txt", "plik4.txt"};
 			SaveDefaultData* save = new SaveDefaultData(names, amount);
 			string* data = save->Save();
